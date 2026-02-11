@@ -562,7 +562,7 @@ border:1px solid var(--border);color:var(--text2);transition:all .3s}
 <!-- POTENTIAL CUSTOMERS -->
 <section id="customers">
 <div class="section-label">04b — Potential Customers</div>
-<h2 class="section-title">Top 20 Marine Pump Buyers: 2026–2045</h2>
+<h2 class="section-title">Top 21 Marine Pump Buyers: 2026–2045</h2>
 <p class="section-desc">Ranked by estimated cryogenic pump system demand over the next 10–20 years. Click any customer to explore their fleet, vessel types, planned purchases, and preferred pump suppliers.</p>
 
 <div class="cust-controls">
@@ -572,6 +572,7 @@ border:1px solid var(--border);color:var(--text2);transition:all .3s}
   <button class="cust-filter" data-filter="carrier">LNG Carriers</button>
   <button class="cust-filter" data-filter="car">Car Carriers</button>
   <button class="cust-filter" data-filter="tanker">Tankers / Bulk</button>
+  <button class="cust-filter" data-filter="gas">Gas (LPG/CO₂/NH₃)</button>
 </div>
 
 <div class="cust-list" id="custList"></div>
@@ -1641,7 +1642,20 @@ vessels:[
 suppliers:[{name:'Nikkiso',primary:true},{name:'Ebara Cryodynamics',primary:true}],
 details:{orderValue:'$4B+ fleet program',engines:'MAN ME-GI, WinGD X-DF',shipyards:'Hanwha Ocean, Imabari, Samsung Heavy',partners:'TotalEnergies, JERA, Chevron, QatarEnergy JV (with COSCO)'}},
 
-{rank:11,name:'Evergreen Marine',hq:'Taipei, Taiwan',sector:['container'],
+{rank:11,name:'Capital Gas Ship Management',hq:'Athens, Greece',sector:['carrier','gas'],
+orderbook:'24 vessels under construction',pumps:'75+',demand:60,
+sub:'Largest Greek LNG orderbook · Marinakis Group · LCO₂ + VLAC pioneer',
+detail:'Operated by Evangelos Marinakis\'s Capital Group — holds the largest LNG carrier orderbook in Greece with 24 vessels under construction. Currently manages 21 modern LNG carriers (174K m³), 8 LPG carriers, 4 pioneering liquid CO₂ carriers (22K cbm — industry first), and 2 dual-fuel VLACs (88K m³ each, ordered at HD HHI). Fleet expanding from 32 to 36+ vessels by 2027. Nasdaq-listed via Capital Clean Energy Carriers (CCEC). $756M invested in 10 newbuild gas carriers alone. Five-year Wärtsilä lifecycle maintenance agreement for seven LNG carriers.',
+vesselTypes:'LNG carriers (174K m³), LCO₂ carriers (22K cbm), VLACs (88K m³), LPG carriers',
+vessels:[
+{name:'174K m³ LNG Carrier Fleet',desc:'21 modern LNG carriers in operation. Next-gen eco-efficient design with minimal methane slip. 18 newbuilds delivering through 2027.',tags:['hp'],vtype:'lng'},
+{name:'6 Additional LNG Newbuilds',desc:'Agreed to acquire 6 more latest-generation LNG carriers for 2026-2027 delivery. Expanding to largest Greek gas fleet.',tags:['hp','planned'],vtype:'lng'},
+{name:'LCO₂ + VLAC Pioneers',desc:'4 liquid CO₂ carriers (22K cbm — world first) + 2 Very Large Ammonia Carriers (88K m³). HD HHI-built. Delivery 2026-2027.',tags:['hp','planned'],vtype:'tanker'}
+],
+suppliers:[{name:'Ebara Cryodynamics',primary:true},{name:'Nikkiso',primary:true},{name:'Cryostar',primary:false}],
+details:{orderValue:'$756M+ in newbuilds (gas carriers alone)',engines:'WinGD X-DF (dual-fuel), MAN ME-GI',shipyards:'HD Hyundai Heavy Industries, Hyundai Samho, HD KSOE',partners:'QatarEnergy (charter), PetroChina (charter), Wärtsilä (lifecycle), Capital Clean Energy Carriers (CCEC/Nasdaq)'}},
+
+{rank:12,name:'Evergreen Marine',hq:'Taipei, Taiwan',sector:['container'],
 orderbook:'840K TEU on order',pumps:'80+',demand:58,
 sub:'World #7 container · Ocean Alliance · Major dual-fuel orderbook',
 detail:'Fourth-largest orderbook in the container industry at 840K TEU. Core Ocean Alliance member with CMA CGM and COSCO. Aggressive fleet renewal with LNG dual-fuel vessels. 87% of new vehicle carrier orders and 74% of container orders are now dual-fuel by DWT, reflecting the industry shift Evergreen is leading.',
@@ -1653,7 +1667,7 @@ vessels:[
 suppliers:[{name:'Nikkiso',primary:true},{name:'Cryostar',primary:false}],
 details:{orderValue:'$5B+',engines:'MAN ME-GI',shipyards:'Samsung Heavy, Nihon Shipyard, CSSC yards',partners:'Ocean Alliance (CMA CGM, COSCO)'}},
 
-{rank:12,name:'ONE (Ocean Network Express)',hq:'Singapore',sector:['container'],
+{rank:13,name:'ONE (Ocean Network Express)',hq:'Singapore',sector:['container'],
 orderbook:'616K TEU / 31% ratio',pumps:'60+',demand:48,
 sub:'Japan-HQ alliance carrier · Major dual-fuel fleet buildout',
 detail:'Formed from NYK, MOL, and K-Line container divisions. 616K TEU on order — 31% orderbook-to-fleet ratio, one of the highest in the industry. Transitioning to LNG dual-fuel fleet to comply with EU ETS and FuelEU Maritime. Strong Asia-Europe and Trans-Pacific presence.',
@@ -1664,7 +1678,7 @@ vessels:[
 suppliers:[{name:'Nikkiso',primary:true},{name:'Ebara',primary:false}],
 details:{orderValue:'$4B+',engines:'MAN ME-GI, WinGD X-DF',shipyards:'Nihon Shipyard, Imabari, JMU',partners:'NYK, MOL, K-Line (founders)'}},
 
-{rank:13,name:'MISC Berhad',hq:'Kuala Lumpur, Malaysia',sector:['carrier','tanker'],
+{rank:14,name:'MISC Berhad',hq:'Kuala Lumpur, Malaysia',sector:['carrier','tanker'],
 orderbook:'QatarEnergy JV + own fleet',pumps:'45+',demand:42,
 sub:'Malaysia state-linked · LNG carrier specialist · FPSO operator',
 detail:'Leading LNG carrier owner-operator with decades of experience. Operating 3 LNG carriers for QatarEnergy under second shipowner tender. Also owns/operates FPSO fleet and petroleum tankers. Deep expertise in cryogenic systems and LNG handling from MISC\'s Petronas heritage.',
@@ -1676,7 +1690,7 @@ vessels:[
 suppliers:[{name:'Ebara Cryodynamics',primary:true},{name:'Nikkiso',primary:false}],
 details:{orderValue:'$2B+',engines:'MAN ME-GI, steam turbine (legacy)',shipyards:'Samsung Heavy, Hanwha Ocean',partners:'QatarEnergy, Petronas, JV consortium (NYK/K-Line/CLNG)'}},
 
-{rank:14,name:'Wallenius Wilhelmsen',hq:'Lysaker, Norway',sector:['car'],
+{rank:15,name:'Wallenius Wilhelmsen',hq:'Lysaker, Norway',sector:['car'],
 orderbook:'8+ LNG PCTC vessels',pumps:'35+',demand:35,
 sub:'World #1 car carrier · Dual-fuel fleet transition',
 detail:'World\'s largest vehicle carrier operator. Future Way christened 2025 — first of two for Volkswagen charter (6,500 CEU each, CIMC Raffles-built). 87% of vehicle carrier orders now dual-fuel by DWT. Acquired Armacup (NZ) for Asia-Oceania expansion. EV transport driving fire-safety innovation.',
@@ -1688,7 +1702,7 @@ vessels:[
 suppliers:[{name:'Nikkiso',primary:true},{name:'Vanzetti Engineering',primary:false}],
 details:{orderValue:'$1.5B+',engines:'MAN ME-GI, WinGD X-DF',shipyards:'CIMC Raffles, Xiamen Shipbuilding, China Merchants Jinling',partners:'Volkswagen, Hyundai, Toyota, Armacup'}},
 
-{rank:15,name:'K-Line (Kawasaki Kisen Kaisha)',hq:'Tokyo, Japan',sector:['carrier','car'],
+{rank:16,name:'K-Line (Kawasaki Kisen Kaisha)',hq:'Tokyo, Japan',sector:['carrier','car'],
 orderbook:'QatarEnergy JV (4 LNG carriers) + car carriers',pumps:'35+',demand:33,
 sub:'Japan #3 shipping · QatarEnergy/Hyundai Glovis JV',
 detail:'Operating 4 LNG carriers via Hyundai Glovis JV for QatarEnergy (built at Hanwha Ocean). Also expanding LNG-fueled car carrier fleet. Co-founder of ONE for container operations. Strong presence in dry bulk and energy transport. Investing in ammonia-ready vessel designs.',
@@ -1699,7 +1713,7 @@ vessels:[
 suppliers:[{name:'Ebara Cryodynamics',primary:true},{name:'Nikkiso',primary:false}],
 details:{orderValue:'$1.5B+',engines:'MAN ME-GI, WinGD X-DF',shipyards:'Hanwha Ocean, Imabari',partners:'QatarEnergy, Hyundai Glovis, ONE consortium'}},
 
-{rank:16,name:'Zim Integrated Shipping',hq:'Haifa, Israel',sector:['container'],
+{rank:17,name:'Zim Integrated Shipping',hq:'Haifa, Israel',sector:['container'],
 orderbook:'Fleet renewal: LNG dual-fuel',pumps:'30+',demand:30,
 sub:'Highest fleet growth 2020-24 · LNG transition underway',
 detail:'Had the highest fleet percentage growth of any top-10 carrier 2020-2024. Most newbuildings already received but continuing fleet renewal with dual-fuel vessels. Pioneering operational efficiency with digital-first approach. Shifting to LNG and LNG-ready vessels for EU ETS compliance.',
@@ -1710,7 +1724,7 @@ vessels:[
 suppliers:[{name:'Nikkiso',primary:true},{name:'Cryostar',primary:false}],
 details:{orderValue:'$2B+',engines:'MAN ME-GI',shipyards:'Samsung Heavy, CSSC yards',partners:'ZIM e-Commerce, 2M digital platform'}},
 
-{rank:17,name:'TotalEnergies',hq:'Paris, France',sector:['carrier','tanker'],
+{rank:18,name:'TotalEnergies',hq:'Paris, France',sector:['carrier','tanker'],
 orderbook:'LNG carrier charters + fleet',pumps:'40+',demand:38,
 sub:'Energy major · Long-term LNG charterer · Shipping fleet owner',
 detail:'Major LNG charterer with long-term time-charters for carriers (MOL Azure etc.). Also investing in LNG bunkering vessels — committed $400M for two 18,600 m³ LNGBVs (early 2025). 27-year LNG supply agreements with QatarEnergy. Chartering fleet of LNG carriers globally for distribution to France, South Korea, and beyond.',
@@ -1722,7 +1736,7 @@ vessels:[
 suppliers:[{name:'Cryostar',primary:true},{name:'Nikkiso',primary:false},{name:'Alfa Laval',primary:false}],
 details:{orderValue:'$3B+ shipping/bunkering investment',engines:'WinGD X-DF, MAN ME-GI',shipyards:'Various Korean/Chinese (chartered tonnage)',partners:'QatarEnergy (27yr supply), MOL, multiple carrier partners'}},
 
-{rank:18,name:'Disney Cruise Line',hq:'Orlando, USA',sector:['cruise'],
+{rank:19,name:'Disney Cruise Line',hq:'Orlando, USA',sector:['cruise'],
 orderbook:'4+ LNG ships (2027-2031)',pumps:'25+',demand:25,
 sub:'Premium cruise · Meyer Werft partnership extended to 2031',
 detail:'Extended partnership with Meyer Werft for 4 additional LNG ships (Aug 2024) for delivery 2027-2031. Disney Wish (2022), Disney Treasure (2024), Disney Destiny (2025) already LNG-powered. Premium family cruise market with highest per-berth revenue in the industry driving continued fleet investment.',
@@ -1734,7 +1748,7 @@ vessels:[
 suppliers:[{name:'Vanzetti Engineering',primary:true},{name:'Alfa Laval Cryomec',primary:false}],
 details:{orderValue:'$4B+ for 7 ships total',engines:'Wärtsilä 46DF',shipyards:'Meyer Werft (exclusive)',partners:'Meyer Werft (long-term partnership)'}},
 
-{rank:19,name:'Norwegian Cruise Line Holdings',hq:'Miami, USA',sector:['cruise'],
+{rank:20,name:'Norwegian Cruise Line Holdings',hq:'Miami, USA',sector:['cruise'],
 orderbook:'Prima Plus-class LNG',pumps:'20+',demand:22,
 sub:'Norwegian + Oceania + Regent · Prima-class LNG fleet',
 detail:'Norwegian Prima class (142,500 GT) features LNG-powered propulsion. NCL continues to invest in dual-fuel cruise ships across its three brands: Norwegian Cruise Line, Oceania Cruises, and Regent Seven Seas. Allura (Oceania, 67K GT) launched 2025 from Fincantieri.',
@@ -1746,7 +1760,7 @@ vessels:[
 suppliers:[{name:'Vanzetti Engineering',primary:true},{name:'Alfa Laval Cryomec',primary:false}],
 details:{orderValue:'$2B+',engines:'Wärtsilä 46DF',shipyards:'Fincantieri',partners:'Oceania Cruises, Regent Seven Seas'}},
 
-{rank:20,name:'Sallaum Lines',hq:'Antwerp, Belgium',sector:['car'],
+{rank:21,name:'Sallaum Lines',hq:'Antwerp, Belgium',sector:['car'],
 orderbook:'12+ LNG dual-fuel PCTCs',pumps:'18+',demand:18,
 sub:'Car carrier specialist · Ocean Breeze launched Sep 2025',
 detail:'Rapidly growing automotive carrier. Ocean Breeze — first of six 7,500 CEU LNG dual-fuel PCTCs — launched at Antwerp Sep 2025. Then ordered six MORE dual-fuel PCTCs (7,400-7,500 CEU) from Fujian Mawei and China Merchants Jinling. Ammonia-capable LNG fuel tanks. 25%+ CO₂ reduction vs HFO.',
