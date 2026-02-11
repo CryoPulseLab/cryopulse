@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryoPulse — Marine Cryogenic Pump Intelligence by Shadi Mahshi</title>
+<meta name="description" content="Comprehensive market intelligence on reciprocating cryogenic pumps in the marine industry. Competitor analysis, 3D pump models, market predictions, and strategic insights by Shadi Mahshi.">
+<meta name="author" content="Shadi Mahshi">
+<meta property="og:title" content="CryoPulse — Marine Cryogenic Pump Intelligence">
+<meta property="og:description" content="Interactive analysis of the reciprocating cryogenic pump marine industry. 5 competitors, 25 pump models, 5-year market forecast.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#0a0c10;--surface:#12151c;--surface2:#1a1e28;--border:#252a36;
+--accent:#00e5a0;--accent2:#00b8d4;--accent3:#6c63ff;--warn:#ff6b6b;
+--text:#e8eaf0;--text2:#8892a4;--text3:#5a6478;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;line-height:1.6}
+.mono{font-family:'Space Mono',monospace}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* NOISE OVERLAY */
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+pointer-events:none;z-index:9999;opacity:.5}
+
+/* HEADER */
+header{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+padding:2rem;overflow:hidden;text-align:center}
+header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+background:radial-gradient(ellipse at 30% 50%,rgba(0,229,160,.06) 0%,transparent 50%),
+radial-gradient(ellipse at 70% 60%,rgba(0,184,212,.04) 0%,transparent 50%);animation:drift 20s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-2%,1%)}}
+
+.hero-label{font-family:'Space Mono',monospace;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;
+color:var(--accent);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s ease forwards .2s}
+.hero-title{font-size:clamp(2rem,6vw,4.5rem);font-weight:700;line-height:1.1;max-width:900px;
+opacity:0;animation:fadeUp .8s ease forwards .4s}
+.hero-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:1.1rem;color:var(--text2);max-width:700px;margin-top:1.5rem;opacity:0;animation:fadeUp .8s ease forwards .6s}
+.hero-stats{display:flex;gap:3rem;margin-top:3rem;opacity:0;animation:fadeUp .8s ease forwards .8s}
+.hero-stat{text-align:center}
+.hero-stat .val{font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;color:var(--accent)}
+.hero-stat .lbl{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:.25rem}
+
+.scroll-hint{position:absolute;bottom:2rem;opacity:0;animation:fadeUp .8s ease forwards 1.2s}
+.scroll-hint span{display:block;width:2px;height:40px;background:linear-gradient(to bottom,var(--accent),transparent);
+margin:0 auto;animation:scrollPulse 2s ease-in-out infinite}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@keyframes scrollPulse{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(.5);opacity:1}}
+.hero-label,.hero-title,.hero-sub,.hero-stats,.scroll-hint{transform:translateY(20px)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,12,16,.85);backdrop-filter:blur(20px);
+border-bottom:1px solid var(--border);padding:.75rem 2rem;display:flex;align-items:center;gap:2rem;overflow-x:auto}
+nav a{font-size:.8rem;color:var(--text2);text-decoration:none;white-space:nowrap;letter-spacing:.05em;
+transition:color .2s;font-family:'Space Mono',monospace}
+nav a:hover,nav a.active{color:var(--accent)}
+nav .nav-logo{font-weight:700;color:var(--text);font-size:.9rem;margin-right:auto}
+
+/* SECTIONS */
+section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
+.section-label{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+color:var(--accent);margin-bottom:.75rem}
+.section-title{font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-bottom:1rem}
+.section-desc{color:var(--text2);max-width:700px;margin-bottom:3rem}
+
+/* COMPANY GRID */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
+.company-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;
+cursor:pointer;transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.company-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transition:transform .4s;transform-origin:left}
+.company-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 20px 60px rgba(0,229,160,.08)}
+.company-card:hover::before{transform:scaleX(1)}
+.company-card.active{border-color:var(--accent);background:var(--surface2)}
+
+.company-logo{width:80px;height:80px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+font-weight:700;font-size:1.2rem;margin-bottom:1.25rem;position:relative;overflow:hidden;transition:transform .5s}
+.company-card:hover .company-logo{transform:scale(1.05) rotate(-2deg)}
+.company-name{font-weight:600;font-size:1.1rem;margin-bottom:.25rem}
+.company-country{font-size:.8rem;color:var(--text3);font-family:'Space Mono',monospace}
+.company-tag{display:inline-block;font-size:.65rem;padding:.25rem .6rem;border-radius:20px;
+background:rgba(0,229,160,.1);color:var(--accent);margin-top:.75rem;font-family:'Space Mono',monospace}
+
+/* COMPANY DETAIL */
+.company-detail{display:none;margin-top:3rem;animation:slideIn .5s ease}
+.company-detail.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.detail-header{display:flex;align-items:flex-start;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.detail-info{flex:1;min-width:300px}
+.detail-info h2{font-size:2rem;margin-bottom:.5rem}
+.detail-info p{color:var(--text2);max-width:600px}
+.detail-stats{display:flex;gap:1.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.detail-stat{background:var(--surface2);border-radius:12px;padding:1rem 1.25rem;min-width:120px}
+.detail-stat .v{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.detail-stat .l{font-size:.7rem;color:var(--text3);margin-top:.25rem;text-transform:uppercase;letter-spacing:.05em}
+
+/* PUMP CARDS */
+.pump-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2rem}
+.pump-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+transition:all .3s}
+.pump-card:hover{border-color:var(--accent2);transform:translateY(-2px)}
+.pump-3d{height:220px;background:var(--bg);position:relative;cursor:grab;overflow:hidden}
+.pump-3d:active{cursor:grabbing}
+.pump-3d canvas{width:100%!important;height:100%!important}
+.pump-3d .drag-hint{position:absolute;bottom:8px;right:8px;font-size:.6rem;color:var(--text3);
+font-family:'Space Mono',monospace;background:rgba(0,0,0,.6);padding:2px 8px;border-radius:4px;pointer-events:none}
+.pump-info{padding:1.25rem}
+.pump-name{font-weight:600;font-size:1rem;margin-bottom:.5rem}
+.pump-specs{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.75rem}
+.pump-spec{font-size:.75rem;color:var(--text2)}
+.pump-spec strong{color:var(--text);font-weight:500}
+.pump-type-badge{display:inline-block;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;
+font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em}
+.pump-type-badge.recip{background:rgba(108,99,255,.15);color:var(--accent3)}
+.pump-type-badge.cent{background:rgba(0,184,212,.15);color:var(--accent2)}
+.pump-type-badge.sub{background:rgba(0,229,160,.15);color:var(--accent)}
+
+/* CHARTS */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:2rem}
+.chart-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.chart-box h3{font-size:1rem;margin-bottom:.25rem}
+.chart-box .chart-sub{font-size:.75rem;color:var(--text3);margin-bottom:1rem}
+.chart-wrap{position:relative;height:300px}
+
+/* PREDICTIONS */
+.pred-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem}
+.pred-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;
+position:relative;overflow:hidden}
+.pred-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+border-radius:0 16px 0 80px;opacity:.15}
+.pred-card.bullish::after{background:var(--accent)}
+.pred-card.watch::after{background:var(--accent2)}
+.pred-card.gap::after{background:var(--accent3)}
+.pred-card.risk::after{background:var(--warn)}
+.pred-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+font-size:1.2rem;margin-bottom:1rem}
+.pred-card.bullish .pred-icon{background:rgba(0,229,160,.15);color:var(--accent)}
+.pred-card.watch .pred-icon{background:rgba(0,184,212,.15);color:var(--accent2)}
+.pred-card.gap .pred-icon{background:rgba(108,99,255,.15);color:var(--accent3)}
+.pred-card.risk .pred-icon{background:rgba(255,107,107,.15);color:var(--warn)}
+.pred-card h4{font-size:1rem;margin-bottom:.5rem}
+.pred-card p{font-size:.85rem;color:var(--text2);line-height:1.5}
+.pred-card .pred-year{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text3);margin-top:.75rem}
+
+/* TECH ROADMAP */
+.roadmap{position:relative;padding-left:2rem;margin-top:2rem}
+.roadmap::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;
+background:linear-gradient(to bottom,var(--accent),var(--accent2),var(--accent3))}
+.roadmap-item{position:relative;padding-bottom:2.5rem}
+.roadmap-item::before{content:'';position:absolute;left:-2rem;top:4px;width:16px;height:16px;
+border-radius:50%;border:3px solid var(--accent);background:var(--bg)}
+.roadmap-item:nth-child(2)::before{border-color:var(--accent2)}
+.roadmap-item:nth-child(3)::before{border-color:var(--accent3)}
+.roadmap-item:nth-child(4)::before{border-color:var(--warn)}
+.roadmap-item:nth-child(5)::before{border-color:#f0c040}
+.roadmap-year{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--accent);margin-bottom:.25rem}
+.roadmap-title{font-weight:600;font-size:1.05rem;margin-bottom:.25rem}
+.roadmap-desc{font-size:.85rem;color:var(--text2);max-width:600px}
+
+/* COMPARISON TABLE */
+.comp-table-wrap{overflow-x:auto;margin-top:2rem;border-radius:16px;border:1px solid var(--border)}
+table.comp-table{width:100%;border-collapse:collapse;min-width:800px}
+table.comp-table th{background:var(--surface2);padding:1rem;text-align:left;font-size:.75rem;
+text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-family:'Space Mono',monospace;
+border-bottom:1px solid var(--border);position:sticky;top:0}
+table.comp-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.85rem;
+background:var(--surface);vertical-align:top}
+table.comp-table tr:hover td{background:var(--surface2)}
+.bar-cell{display:flex;align-items:center;gap:.5rem}
+.bar-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s}
+.bar-val{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--text3);min-width:35px}
+
+/* GAP ANALYSIS */
+.gap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.gap-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;
+border-left:3px solid var(--accent3);transition:all .3s}
+.gap-card:hover{transform:translateX(4px);border-left-color:var(--accent)}
+.gap-card h4{font-size:1rem;margin-bottom:.5rem}
+.gap-card p{font-size:.85rem;color:var(--text2)}
+.gap-opp{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--accent);margin-top:.75rem;
+padding:.3rem .6rem;background:rgba(0,229,160,.08);border-radius:4px;display:inline-block}
+
+/* STRATEGIC MATRIX */
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:2rem;border-radius:16px;overflow:hidden;
+background:var(--border);max-width:800px}
+.matrix-cell{background:var(--surface);padding:1.5rem;min-height:200px}
+.matrix-cell h4{font-size:.85rem;font-family:'Space Mono',monospace;margin-bottom:.75rem}
+.matrix-cell ul{list-style:none;padding:0}
+.matrix-cell li{font-size:.8rem;color:var(--text2);padding:.3rem 0;padding-left:1rem;position:relative}
+.matrix-cell li::before{content:'›';position:absolute;left:0;color:var(--accent)}
+.matrix-label{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.5rem;
+font-family:'Space Mono',monospace}
+.matrix-q{position:relative}
+.matrix-q.q1 h4{color:var(--accent)}
+.matrix-q.q2 h4{color:var(--accent2)}
+.matrix-q.q3 h4{color:var(--accent3)}
+.matrix-q.q4 h4{color:var(--warn)}
+
+/* INTERACTIVE SANKEY/FLOW */
+.flow-section{margin-top:2rem}
+.flow-diagram{display:flex;align-items:center;gap:1rem;overflow-x:auto;padding:2rem 0}
+.flow-node{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;
+min-width:140px;text-align:center;transition:all .3s;cursor:pointer;flex-shrink:0}
+.flow-node:hover{border-color:var(--accent);transform:scale(1.05)}
+.flow-node .fn-label{font-size:.65rem;color:var(--text3);text-transform:uppercase;font-family:'Space Mono',monospace}
+.flow-node .fn-val{font-size:1.1rem;font-weight:600;margin-top:.25rem}
+.flow-arrow{color:var(--text3);font-size:1.5rem;flex-shrink:0}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:3rem 2rem;text-align:center;color:var(--text3);font-size:.8rem}
+
+/* TABS */
+.tab-row{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.tab-btn{padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);background:transparent;
+color:var(--text2);cursor:pointer;font-size:.8rem;font-family:'Space Mono',monospace;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent)}
+.tab-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+/* TOOLTIP */
+.tooltip{position:relative}
+.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+padding:.4rem .8rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+font-size:.7rem;color:var(--text);white-space:nowrap;z-index:10}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero-stats{flex-direction:column;gap:1rem;align-items:center}
+  .chart-grid{grid-template-columns:1fr}
+  .matrix{grid-template-columns:1fr}
+  nav{gap:1rem;padding:.75rem 1rem}
+  section{padding:3rem 1rem}
+}
+
+/* ANIMATED GRADIENT BORDERS */
+.glow-border{position:relative}
+.glow-border::before{content:'';position:absolute;inset:-1px;border-radius:17px;padding:1px;
+background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));
+-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s}
+.glow-border:hover::before{opacity:1}
+
+/* KPI TICKER */
+.kpi-ticker{display:flex;gap:2rem;padding:1rem 2rem;background:var(--surface);border-bottom:1px solid var(--border);
+overflow-x:auto;font-family:'Space Mono',monospace;font-size:.75rem}
+.kpi-item{display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.kpi-item .kpi-dot{width:6px;height:6px;border-radius:50%}
+.kpi-item .kpi-up{color:var(--accent)}
+.kpi-item .kpi-val{color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+<div class="hero-label">CryoPulse · Market Intelligence Report · 2026</div>
+<h1 class="hero-title">Reciprocating Cryogenic Pumps<br>in the <span>Marine Industry</span></h1>
+<div class="hero-author" style="margin-top:1rem;opacity:0;animation:fadeUp .8s ease forwards .5s;transform:translateY(20px)">
+  <span style="font-family:'Space Mono',monospace;font-size:.85rem;letter-spacing:.15em;color:var(--text2)">By </span>
+  <span style="font-family:'Space Mono',monospace;font-size:.95rem;letter-spacing:.1em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700">Shadi Mahshi</span>
+</div>
+<p class="hero-sub">A comprehensive analysis of the competitive landscape, technology trajectories, and untapped market opportunities in marine LNG, hydrogen, and ammonia pump systems.</p>
+<div class="hero-stats">
+  <div class="hero-stat"><div class="val">$500M+</div><div class="lbl">Marine Cryo Market</div></div>
+  <div class="hero-stat"><div class="val">7% CAGR</div><div class="lbl">2025–2033</div></div>
+  <div class="hero-stat"><div class="val">400+</div><div class="lbl">LNG Vessels</div></div>
+  <div class="hero-stat"><div class="val">5</div><div class="lbl">Key Competitors</div></div>
+</div>
+<div class="scroll-hint"><span></span></div>
+</header>
+
+<!-- TICKER -->
+<div class="kpi-ticker">
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--accent)"></span><span class="kpi-val">LNG Demand</span><span class="kpi-up">▲ 6.5%</span></div>
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--accent2)"></span><span class="kpi-val">H₂ Marine R&D</span><span class="kpi-up">▲ 14%</span></div>
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--accent3)"></span><span class="kpi-val">Dual-Fuel Orders</span><span class="kpi-up">▲ 23%</span></div>
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--warn)"></span><span class="kpi-val">NH₃ Readiness</span><span style="color:var(--warn)">● Early</span></div>
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--accent)"></span><span class="kpi-val">Asia-Pacific</span><span class="kpi-up">▲ 8.1% CAGR</span></div>
+  <div class="kpi-item"><span class="kpi-dot" style="background:var(--accent2)"></span><span class="kpi-val">FGSS Retrofits</span><span class="kpi-up">▲ 30%</span></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">CRYO<span style="color:var(--accent)">PULSE</span></span>
+  <a href="#overview">Overview</a>
+  <a href="#competitors">Competitors</a>
+  <a href="#pumps">Pump Models</a>
+  <a href="#market">Market Data</a>
+  <a href="#predictions">Predictions</a>
+  <a href="#technology">Technology</a>
+  <a href="#gaps">Opportunities</a>
+  <a href="#strategy">Strategy</a>
+</nav>
+
+<!-- MARKET OVERVIEW -->
+<section id="overview">
+<div class="section-label">01 — Industry Overview</div>
+<h2 class="section-title">The Marine Cryogenic Pump Ecosystem</h2>
+<p class="section-desc">Reciprocating cryogenic pumps are the high-pressure backbone of marine fuel gas supply systems. As the maritime industry accelerates its transition from heavy fuel oil to LNG — and eyes hydrogen and ammonia — these pumps sit at the critical junction of decarbonization and operational reliability.</p>
+
+<div class="flow-section">
+<div class="flow-diagram">
+  <div class="flow-node"><div class="fn-label">LNG Storage</div><div class="fn-val">-162°C</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node" style="border-color:var(--accent)"><div class="fn-label">Submerged Pump</div><div class="fn-val">Low P Feed</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node" style="border-color:var(--accent2)"><div class="fn-label">Recip. Pump</div><div class="fn-val">≤500 bar</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="fn-label">Vaporizer</div><div class="fn-val">Gas Phase</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="fn-label">ME-GI / X-DF</div><div class="fn-val">Engine</div></div>
+</div>
+</div>
+
+<div class="chart-grid" style="margin-top:3rem">
+  <div class="chart-box">
+    <h3>Global Cryogenic Pump Market Size</h3>
+    <div class="chart-sub">USD Billions — Forecast to 2030</div>
+    <div class="chart-wrap"><canvas id="marketSizeChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Marine Segment Breakdown by Application</h3>
+    <div class="chart-sub">2025 estimated revenue share</div>
+    <div class="chart-wrap"><canvas id="segmentChart"></canvas></div>
+  </div>
+</div>
+</section>
+
+<!-- COMPETITORS -->
+<section id="competitors">
+<div class="section-label">02 — Competitive Landscape</div>
+<h2 class="section-title">The Five Dominant Players</h2>
+<p class="section-desc">These companies command the marine reciprocating cryogenic pump market through deep engineering expertise, classification society approvals, and installed base advantages. Click a company to explore their portfolio.</p>
+
+<div class="company-grid" id="companyGrid"></div>
+<div id="companyDetail"></div>
+</section>
+
+<!-- PUMP MODELS -->
+<section id="pumps">
+<div class="section-label">03 — Pump Portfolio Analysis</div>
+<h2 class="section-title">Top Marine Pump Models — Interactive 3D</h2>
+<p class="section-desc">Drag each model to rotate 360°. These represent the flagship reciprocating and submerged pumps each company brings to the marine market, covering both high-pressure ME-GI fuel supply and low-pressure X-DF applications.</p>
+
+<div class="tab-row" id="pumpTabs"></div>
+<div id="pumpDisplay"></div>
+</section>
+
+<!-- MARKET DATA -->
+<section id="market">
+<div class="section-label">04 — Market Intelligence</div>
+<h2 class="section-title">Data-Driven Market Analysis</h2>
+<p class="section-desc">Key metrics driving investment and engineering decisions in the marine cryogenic pump sector.</p>
+
+<div class="chart-grid">
+  <div class="chart-box">
+    <h3>Competitive Market Share — Marine Segment</h3>
+    <div class="chart-sub">Estimated 2025 installed base & new orders</div>
+    <div class="chart-wrap"><canvas id="shareChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>LNG-Fueled Vessel Order Book</h3>
+    <div class="chart-sub">New vessel orders by year requiring cryo pump FGSS</div>
+    <div class="chart-wrap"><canvas id="vesselChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Regional Market Distribution</h3>
+    <div class="chart-sub">Revenue contribution by geography — 2025</div>
+    <div class="chart-wrap"><canvas id="regionChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Technology Mix: High-Pressure vs. Low-Pressure</h3>
+    <div class="chart-sub">Shift from LP (X-DF) to HP (ME-GI) systems over time</div>
+    <div class="chart-wrap"><canvas id="techMixChart"></canvas></div>
+  </div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<h3 style="margin-top:3rem;margin-bottom:.5rem">Head-to-Head Capability Comparison</h3>
+<p class="section-desc" style="margin-bottom:1.5rem">Normalized scoring across critical dimensions (0–100 scale)</p>
+<div class="comp-table-wrap">
+<table class="comp-table">
+<thead><tr><th>Company</th><th>Max Pressure</th><th>Marine Installed Base</th><th>H₂ Readiness</th><th>FGSS Integration</th><th>Service Network</th><th>Innovation Pipeline</th></tr></thead>
+<tbody id="compTableBody"></tbody>
+</table>
+</div>
+</section>
+
+<!-- PREDICTIONS -->
+<section id="predictions">
+<div class="section-label">05 — 5-Year Outlook</div>
+<h2 class="section-title">Market Predictions 2026–2031</h2>
+<p class="section-desc">Where the market is heading and what engineering teams should prepare for.</p>
+
+<div class="pred-grid" id="predGrid"></div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section id="technology">
+<div class="section-label">06 — Technology Roadmap</div>
+<h2 class="section-title">Where the Technology is Heading</h2>
+<p class="section-desc">A timeline of critical technology shifts that will reshape the reciprocating cryogenic pump industry.</p>
+
+<div class="roadmap" id="roadmap"></div>
+
+<div class="chart-grid" style="margin-top:3rem">
+  <div class="chart-box">
+    <h3>R&D Investment Focus Areas</h3>
+    <div class="chart-sub">Estimated industry spend allocation by technology domain</div>
+    <div class="chart-wrap"><canvas id="rdChart"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Fuel Molecule Adoption Timeline</h3>
+    <div class="chart-sub">Projected share of marine fuel gas pump installations</div>
+    <div class="chart-wrap"><canvas id="fuelChart"></canvas></div>
+  </div>
+</div>
+</section>
+
+<!-- GAPS -->
+<section id="gaps">
+<div class="section-label">07 — Gap Analysis & Opportunities</div>
+<h2 class="section-title">Untapped Opportunities</h2>
+<p class="section-desc">Critical market gaps where engineering teams and companies can gain first-mover advantage.</p>
+
+<div class="gap-grid" id="gapGrid"></div>
+</section>
+
+<!-- STRATEGIC MATRIX -->
+<section id="strategy">
+<div class="section-label">08 — Strategic Guidance</div>
+<h2 class="section-title">Engineering Team Strategy Matrix</h2>
+<p class="section-desc">Where to focus engineering resources based on market timing and competitive positioning.</p>
+
+<div class="matrix">
+  <div class="matrix-cell matrix-q q1">
+    <div class="matrix-label">High Impact · Near Term</div>
+    <h4>Execute Now</h4>
+    <ul>
+      <li>HP reciprocating pump efficiency gains (target 500 bar standard)</li>
+      <li>FGSS modular skid standardization for retrofit market</li>
+      <li>Dual-fuel pump systems for ME-GI + X-DF flexibility</li>
+      <li>Digital twin integration for predictive maintenance</li>
+      <li>Class approval fast-tracking for existing marine pump lines</li>
+    </ul>
+  </div>
+  <div class="matrix-cell matrix-q q2">
+    <div class="matrix-label">High Impact · Long Term</div>
+    <h4>Invest & Develop</h4>
+    <ul>
+      <li>Liquid hydrogen (LH₂) reciprocating pump development</li>
+      <li>Ammonia-compatible cryogenic pump materials research</li>
+      <li>Autonomous pump health monitoring (AI-driven)</li>
+      <li>Variable-speed drive integration for energy optimization</li>
+      <li>Next-gen seal technology for multi-molecule compatibility</li>
+    </ul>
+  </div>
+  <div class="matrix-cell matrix-q q3">
+    <div class="matrix-label">Moderate Impact · Near Term</div>
+    <h4>Quick Wins</h4>
+    <ul>
+      <li>After-sales service network expansion in Asia-Pacific</li>
+      <li>Spare parts commonality across pump families</li>
+      <li>Remote commissioning capability development</li>
+      <li>Training & certification programs for shipyard crews</li>
+      <li>Bio-LNG compatibility certification for existing pumps</li>
+    </ul>
+  </div>
+  <div class="matrix-cell matrix-q q4">
+    <div class="matrix-label">Monitor · Emerging</div>
+    <h4>Watch & Learn</h4>
+    <ul>
+      <li>Methanol fuel pump applications (different thermal profile)</li>
+      <li>Carbon capture integration with cryogenic systems</li>
+      <li>Small modular nuclear vessel pump requirements</li>
+      <li>Superconducting marine propulsion cooling systems</li>
+      <li>Fully electric cryogenic pump systems for zero-emission vessels</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<footer>
+<p style="margin-bottom:.5rem">CRYOPULSE — Marine Reciprocating Cryogenic Pump Market Intelligence</p>
+<p>By Shadi Mahshi · Data compiled from public filings, industry reports, and analyst research. Market figures are estimates. Updated February 2026.</p>
+</footer>
+
+<script>
+// ==================== DATA ====================
+const companies = [
+  {
+    id:'nikkiso',name:'Nikkiso',sub:'Clean Energy & Industrial Gases',country:'Japan / USA',
+    color:'#00e5a0',color2:'#0a3d2e',
+    logo:'NK',tag:'Market Leader',
+    founded:'1953',employees:'1,800+',vessels:'400+',revenue:'~$800M (Group)',
+    desc:'The world leader in marine cryogenic pump systems with the largest installed base of over 400 LNG-fueled vessels. Their acquisition of JC Carter and ACD brought deep reciprocating pump heritage. Recently launched next-gen FGSS for dual-fuel retrofits with SunRui partnership.',
+    pumps:[
+      {name:'MSP-GU High-Pressure',type:'recip',pressure:'350 bar',flow:'Up to 14 m³/h',config:'Simplex/Duplex/Triplex',app:'ME-GI Fuel Supply',temp:'-162°C (LNG)',color:'#00e5a0'},
+      {name:'3-GUPD Marine Series',type:'recip',pressure:'500 bar',flow:'High flow',config:'Triplex',app:'HP Fuel Gas Supply',temp:'-162°C',color:'#00e5a0'},
+      {name:'Submerged Motor Pump',type:'sub',pressure:'Low pressure',flow:'20–3000 m³/h',config:'Single/Multi-stage',app:'LNG Feed & Boost',temp:'-162°C',color:'#00e5a0'},
+      {name:'FSRU Booster Pump',type:'cent',pressure:'Medium',flow:'Variable',config:'Multi-stage',app:'FSRU/FLNG Service',temp:'-162°C',color:'#00e5a0'},
+      {name:'Next-Gen FGSS Module',type:'recip',pressure:'500 bar',flow:'Modular',config:'Skid-mounted',app:'Dual-Fuel Retrofit',temp:'-162°C',color:'#00e5a0'}
+    ],scores:{pressure:95,base:98,h2:65,fgss:95,service:90,innovation:85}
+  },
+  {
+    id:'vanzetti',name:'Vanzetti Engineering',sub:'Cryogenic Pump OEM',country:'Italy',
+    color:'#00b8d4',color2:'#0a2d35',
+    logo:'VE',tag:'Fastest Growing',
+    founded:'1984',employees:'200+',vessels:'250+',revenue:'~€45M (2024)',
+    desc:'Italy-based OEM with 30% CAGR growth. Sole supplier for all Carnival LNG cruise ship pumps. Strong in both ARTIKA submerged series and VT-3 high-pressure reciprocating pumps. 70% revenue from Asia, expanding rapidly into marine dual-fuel retrofit and retractable pump segments.',
+    pumps:[
+      {name:'VT-3 Duplex HP',type:'recip',pressure:'420 bar',flow:'Up to 14 m³/h',config:'Simplex/Duplex/Triplex',app:'ME-GI High Pressure',temp:'-162°C',color:'#00b8d4'},
+      {name:'VT-3 Mirrored Series',type:'recip',pressure:'420 bar',flow:'Variable',config:'Mirrored Duplex',app:'Redundant HP Supply',temp:'-162°C',color:'#00b8d4'},
+      {name:'ARTIKA 120-3S Marine',type:'sub',pressure:'~6 bar',flow:'Low flow',config:'3-stage submerged',app:'Fuel Gas / Spray Pump',temp:'-162°C',color:'#00b8d4'},
+      {name:'ARTIKA 200-6S',type:'sub',pressure:'~55 bar',flow:'30+ m³/h',config:'6-stage submerged',app:'X-DF Engine / FSRU',temp:'-162°C',color:'#00b8d4'},
+      {name:'ESK-IMO Retractable',type:'sub',pressure:'Low',flow:'Variable',config:'In-tank retractable',app:'LNG Carrier Cargo',temp:'-162°C',color:'#00b8d4'}
+    ],scores:{pressure:88,base:75,h2:45,fgss:80,service:65,innovation:82}
+  },
+  {
+    id:'ebara',name:'Ebara Corporation',sub:'Cryodynamics Division',country:'Japan / USA',
+    color:'#6c63ff',color2:'#1a1535',
+    logo:'EB',tag:'Heritage Leader',
+    founded:'1912',employees:'18,000+ (Group)',vessels:'4000+ marine units',revenue:'~$5B (Group)',
+    desc:'Through its Cryodynamics division (now part of Elliott Group), Ebara commands the world\'s leading share in LNG plant cryogenic pumps and has nearly 4,000 marine pump units installed globally. Specialist in submerged electric motor pumps with patented TEM® thrust balance technology. Expanding into ammonia and hydrogen pump development.',
+    pumps:[
+      {name:'ECC Land/Marine HP',type:'cent',pressure:'High',flow:'5–3000 m³/h',config:'Single/Multi-stage',app:'LNG Terminal & Marine',temp:'-162°C',color:'#6c63ff'},
+      {name:'Marine Cargo Pump',type:'sub',pressure:'200m head',flow:'20–3000 m³/h',config:'Tank-mounted submerged',app:'LNG/LPG Carrier',temp:'-162°C',color:'#6c63ff'},
+      {name:'Dual-Duty Spray/Fuel',type:'sub',pressure:'Dual point',flow:'Variable',config:'Submerged motor',app:'Spray + Fuel Duty',temp:'-162°C',color:'#6c63ff'},
+      {name:'FLNG Booster Pump',type:'cent',pressure:'High',flow:'Large',config:'TEM® thrust balance',app:'Floating LNG/FSRU',temp:'-162°C',color:'#6c63ff'},
+      {name:'Retractable Emergency',type:'sub',pressure:'Emergency',flow:'Variable',config:'Retractable in-tank',app:'Emergency Discharge',temp:'-162°C to LPG',color:'#6c63ff'}
+    ],scores:{pressure:70,base:95,h2:55,fgss:60,service:85,innovation:70}
+  },
+  {
+    id:'cryostar',name:'Cryostar',sub:'Fives Group',country:'France',
+    color:'#f0c040',color2:'#352d10',
+    logo:'CS',tag:'Innovation Pioneer',
+    founded:'1967',employees:'500+',vessels:'100+',revenue:'Part of Fives (~€2B)',
+    desc:'A Fives Group subsidiary and Europe\'s first cryogenic reciprocating pump manufacturer. Pioneer in FGSS component development, including the Subtran submerged motor pump and MRP high-pressure reciprocating series. Partnered with Cryomotive for liquid hydrogen refueling pump development. Strong in ethane carrier fuel systems.',
+    pumps:[
+      {name:'MRP Marine Recip.',type:'recip',pressure:'380 bar',flow:'Variable',config:'Skid-mounted',app:'FGSS High Pressure',temp:'-162°C',color:'#f0c040'},
+      {name:'SRP Series',type:'recip',pressure:'380 bar',flow:'Medium',config:'Simplex/Duplex/Triplex',app:'LNG/Inert Gas HP',temp:'-162°C',color:'#f0c040'},
+      {name:'Subtran Submerged',type:'sub',pressure:'Low',flow:'Variable',config:'Submerged motor',app:'In-tank LNG Feed',temp:'-162°C',color:'#f0c040'},
+      {name:'PPC CO₂ Series',type:'recip',pressure:'100 bar',flow:'Low-Medium',config:'Basic/Premium',app:'LCO₂ / LN₂O Marine',temp:'-50°C',color:'#f0c040'},
+      {name:'Hy-Filling H₂ Pump',type:'recip',pressure:'Ultra-high',flow:'Low',config:'Cryomotive tech',app:'LH₂ Refueling R&D',temp:'-253°C',color:'#f0c040'}
+    ],scores:{pressure:82,base:55,h2:78,fgss:75,service:70,innovation:90}
+  },
+  {
+    id:'alfalaval',name:'Alfa Laval',sub:'Cryomec® Division',country:'Switzerland / Sweden',
+    color:'#ff6b6b',color2:'#351515',
+    logo:'AL',tag:'Diversified Giant',
+    founded:'1977 (Cryomec)',employees:'20,000+ (Group)',vessels:'Growing',revenue:'~€5B (Group)',
+    desc:'Acquired the Cryomec brand, originally from Switzerland, Alfa Laval brings massive marine industry relationships and a diversified product portfolio. Cryomec® reciprocating pumps serve LNG, LH₂, and industrial gas markets. 16,000-hour labyrinth seal guarantee and cartridge technology for easy maintenance differentiate their offering.',
+    pumps:[
+      {name:'Cryomec® HP Recip.',type:'recip',pressure:'High',flow:'Medium/Low',config:'Simplex/Duplex/Triplex',app:'LNG Marine HP',temp:'-162°C',color:'#ff6b6b'},
+      {name:'Cryomec® MP Recip.',type:'recip',pressure:'Medium',flow:'Medium',config:'Multi-config',app:'Marine Fuel Supply',temp:'-162°C',color:'#ff6b6b'},
+      {name:'Cryomec® VSMP',type:'sub',pressure:'Low',flow:'Up to 8000 L/min',config:'Vertical sealless',app:'LNG Marine Transfer',temp:'-162°C',color:'#ff6b6b'},
+      {name:'Cryomec® LABS',type:'cent',pressure:'Variable',flow:'High',config:'Labyrinth seal',app:'Process/Transfer',temp:'-196°C',color:'#ff6b6b'},
+      {name:'Cryomec® LH₂ Pump',type:'recip',pressure:'High',flow:'Low',config:'Specialized',app:'Liquid Hydrogen',temp:'-253°C',color:'#ff6b6b'}
+    ],scores:{pressure:78,base:50,h2:70,fgss:65,service:88,innovation:75}
+  }
+];
+
+const predictions = [
+  {type:'bullish',icon:'📈',title:'LNG Dual-Fuel Retrofits Surge',desc:'The retrofit market for existing vessels will grow 30%+ annually as IMO 2030 targets approach. Reciprocating pump skid manufacturers who can deliver modular, pre-certified FGSS packages will capture the lion\'s share. Expect 2,000+ vessel conversions by 2030.',year:'2026–2028'},
+  {type:'bullish',icon:'🚢',title:'High-Pressure Systems Dominate',desc:'ME-GI engine adoption is accelerating, shifting the market from 50/50 HP-LP split to 65/35 HP dominance. Reciprocating pumps rated ≥400 bar will become standard. Companies without triplex 500-bar capability will lose competitiveness.',year:'2026–2029'},
+  {type:'watch',icon:'⚗️',title:'Hydrogen Marine Pumps Enter Pilot Phase',desc:'Liquid hydrogen bunkering and propulsion trials will begin on short-sea routes. Reciprocating pumps handling -253°C at high pressure will require new metallurgy, seal technology, and safety certifications. First movers have 3–4 year advantage.',year:'2027–2030'},
+  {type:'watch',icon:'🧪',title:'Ammonia-Ready Pumps Required',desc:'The ammonia as marine fuel movement will demand cryogenic pumps compatible with NH₃ (-33°C). While not as extreme as LNG temps, toxicity and corrosion present unique engineering challenges. Classification societies will issue new rules.',year:'2028–2031'},
+  {type:'gap',icon:'🤖',title:'Smart Pumps & Digital Twins Standard',desc:'IoT-enabled cryogenic pumps with real-time performance monitoring and predictive maintenance will become table stakes. Companies integrating AI-driven diagnostics will command 15-20% price premiums.',year:'2026–2028'},
+  {type:'gap',icon:'🌏',title:'Asia-Pacific Manufacturing Shift',desc:'China and South Korea will move from buyers to competitors. Hangzhou-based manufacturing (Nikkiso) and emerging Chinese OEMs will reshape cost structures. Western companies must differentiate on technology or risk margin compression.',year:'2026–2030'},
+  {type:'risk',icon:'⚠️',title:'US Tariff Impact on Supply Chains',desc:'2025 tariffs on imported cryogenic pump components are forcing supply chain re-evaluation. Companies dependent on single-region manufacturing face 8-15% cost increases, driving nearshoring strategies.',year:'2026–2027'},
+  {type:'bullish',icon:'♻️',title:'Bio-LNG & Synthetic Fuels Compatibility',desc:'Bio-LNG and e-methane will require zero hardware changes to existing LNG pump systems, offering the installed base an extended lifecycle. Certifying existing pumps for bio-LNG is a low-cost revenue opportunity.',year:'2026–2028'}
+];
+
+const roadmap = [
+  {year:'2026',title:'Modular FGSS Standardization',desc:'Pre-engineered, class-approved pump skid packages become the norm. Plug-and-play systems reduce retrofit timelines from months to weeks. Focus on 500-bar standardization for ME-GI.'},
+  {year:'2027',title:'Digital Health Monitoring Integration',desc:'Embedded IoT sensors become standard in all new marine reciprocating pumps. Digital twins enable remote diagnostics, predictive seal replacement, and performance optimization.'},
+  {year:'2028',title:'Multi-Molecule Pump Platforms',desc:'First commercially available reciprocating pumps certified for both LNG and LH₂ service. New austenitic stainless steel alloys and advanced PTFE/polymer seals enable molecule-flexible operation.'},
+  {year:'2029',title:'Ammonia-Compatible Systems',desc:'IMO regulations finalize ammonia fuel requirements. Dedicated NH₃ cryogenic pump designs address toxicity, corrosion resistance, and double-barrier safety. Retrofit kits for existing HP pump cold-ends launched.'},
+  {year:'2030–31',title:'Autonomous Pump Operation',desc:'AI-driven pump control systems autonomously adjust to fuel composition changes, optimize energy consumption, and predict maintenance windows. Variable-speed drives fully integrated into reciprocating pump architecture.'}
+];
+
+const gaps = [
+  {title:'Liquid Hydrogen Marine Pump',desc:'No commercially available, class-approved reciprocating pump exists for marine LH₂ service at -253°C. First to achieve DNV/Lloyd\'s type approval will dominate a nascent but exponentially growing market.',opp:'$200M+ potential by 2032'},
+  {title:'Retrofit FGSS Plug-and-Play Kits',desc:'Most FGSS integrations are still custom-engineered. A standardized, modular, containerized pump-skid system with universal mounting could reduce conversion costs by 40% and lead times by 60%.',opp:'2,000+ vessel conversion market'},
+  {title:'Multi-Fuel Flexible Pump Cold-End',desc:'Current pumps are optimized for a single molecule. A hot-swappable cold-end design allowing the same crankcase to serve LNG, LH₂, or NH₃ would be a game-changer for shipowners hedging fuel bets.',opp:'Eliminates re-investment risk'},
+  {title:'Aftermarket Digital Services Platform',desc:'None of the five leaders offer a comprehensive cloud-based pump monitoring SaaS. Remote diagnostics, parts ordering, and performance benchmarking represents a recurring revenue stream.',opp:'$50M annual SaaS potential'},
+  {title:'Small-Scale Bunkering Pumps',desc:'The LNG bunkering vessel fleet is growing rapidly but pump solutions remain oversized. Purpose-built compact reciprocating pumps optimized for truck-to-ship and barge bunkering are underserved.',opp:'Growing infrastructure gap'},
+  {title:'Integrated Carbon Capture Cryogenics',desc:'Onboard carbon capture requires cryogenic liquefaction of CO₂. Combining pump expertise with CCS creates a new equipment category: marine cryo pump + liquefaction packages.',opp:'Regulatory-driven demand post-2028'}
+];
+
+// ==================== RENDER COMPANIES ====================
+const grid = document.getElementById('companyGrid');
+companies.forEach((c,i) => {
+  const card = document.createElement('div');
+  card.className = 'company-card glow-border';
+  card.dataset.idx = i;
+  card.innerHTML = `
+    <div class="company-logo" style="background:${c.color2};color:${c.color};border:1px solid ${c.color}30">${c.logo}</div>
+    <div class="company-name">${c.name}</div>
+    <div class="company-country">${c.country}</div>
+    <div class="company-tag">${c.tag}</div>
+  `;
+  card.onclick = () => selectCompany(i);
+  grid.appendChild(card);
+});
+
+function selectCompany(idx){
+  document.querySelectorAll('.company-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.company-card')[idx].classList.add('active');
+  const c = companies[idx];
+  const detail = document.getElementById('companyDetail');
+  detail.innerHTML = `
+    <div class="company-detail active">
+      <div class="detail-header">
+        <div class="detail-info">
+          <h2 style="color:${c.color}">${c.name}</h2>
+          <p style="font-size:.85rem;color:var(--text3);margin-bottom:.5rem">${c.sub}</p>
+          <p>${c.desc}</p>
+          <div class="detail-stats">
+            <div class="detail-stat"><div class="v">${c.founded}</div><div class="l">Founded</div></div>
+            <div class="detail-stat"><div class="v">${c.employees}</div><div class="l">Employees</div></div>
+            <div class="detail-stat"><div class="v">${c.vessels}</div><div class="l">Vessel Units</div></div>
+            <div class="detail-stat"><div class="v">${c.revenue}</div><div class="l">Revenue</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  // also switch pump tab
+  selectPumpTab(idx);
+}
+
+// ==================== PUMP TABS ====================
+const pumpTabs = document.getElementById('pumpTabs');
+companies.forEach((c,i) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (i===0?' active':'');
+  btn.textContent = c.name;
+  btn.onclick = () => selectPumpTab(i);
+  pumpTabs.appendChild(btn);
+});
+
+function selectPumpTab(idx){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  const c = companies[idx];
+  const display = document.getElementById('pumpDisplay');
+  display.innerHTML = '';
+  const pgrid = document.createElement('div');
+  pgrid.className = 'pump-grid';
+  c.pumps.forEach((p,pi) => {
+    const card = document.createElement('div');
+    card.className = 'pump-card';
+    const typeClass = p.type==='recip'?'recip':(p.type==='sub'?'sub':'cent');
+    const typeLabel = p.type==='recip'?'RECIPROCATING':(p.type==='sub'?'SUBMERGED':'CENTRIFUGAL');
+    card.innerHTML = `
+      <div class="pump-3d" id="pump3d-${idx}-${pi}">
+        <div class="drag-hint">⟲ DRAG TO ROTATE</div>
+      </div>
+      <div class="pump-info">
+        <span class="pump-type-badge ${typeClass}">${typeLabel}</span>
+        <div class="pump-name" style="margin-top:.5rem">${p.name}</div>
+        <div class="pump-specs">
+          <div class="pump-spec"><strong>Pressure:</strong> ${p.pressure}</div>
+          <div class="pump-spec"><strong>Flow:</strong> ${p.flow}</div>
+          <div class="pump-spec"><strong>Config:</strong> ${p.config}</div>
+          <div class="pump-spec"><strong>Temp:</strong> ${p.temp}</div>
+        </div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.5rem">Application: ${p.app}</div>
+      </div>
+    `;
+    pgrid.appendChild(card);
+  });
+  display.appendChild(pgrid);
+  // init 3D for each pump
+  setTimeout(()=>{
+    c.pumps.forEach((p,pi)=>init3DPump(`pump3d-${idx}-${pi}`,p.color,p.type,pi));
+  },100);
+}
+
+// ==================== 3D PUMP MODEL ====================
+function init3DPump(containerId, color, type, variation){
+  const container = document.getElementById(containerId);
+  if(!container)return;
+  const w = container.clientWidth, h = container.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35,w/h,0.1,100);
+  camera.position.set(0,0,5);
+  const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(w,h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  container.insertBefore(renderer.domElement,container.firstChild);
+
+  const mainColor = new THREE.Color(color);
+  const darkColor = new THREE.Color(color).multiplyScalar(0.3);
+
+  const group = new THREE.Group();
+
+  if(type==='recip'){
+    // Reciprocating pump model
+    // Main cylinder body
+    const bodyGeo = new THREE.CylinderGeometry(0.4,0.4,1.8,16);
+    const bodyMat = new THREE.MeshStandardMaterial({color:mainColor,metalness:0.7,roughness:0.3});
+    const body = new THREE.Mesh(bodyGeo,bodyMat);
+    body.rotation.z = Math.PI/2;
+    group.add(body);
+
+    // Crankcase housing
+    const crankGeo = new THREE.BoxGeometry(0.9,0.7,0.7);
+    const crankMat = new THREE.MeshStandardMaterial({color:darkColor,metalness:0.8,roughness:0.2});
+    const crank = new THREE.Mesh(crankGeo,crankMat);
+    crank.position.set(-1.1,0,0);
+    group.add(crank);
+
+    // Piston rod
+    const rodGeo = new THREE.CylinderGeometry(0.08,0.08,1.2,8);
+    const rodMat = new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:0.9,roughness:0.1});
+    const rod = new THREE.Mesh(rodGeo,rodMat);
+    rod.rotation.z = Math.PI/2;
+    rod.position.set(-0.3,0,0);
+    group.add(rod);
+
+    // Valve head
+    const valveGeo = new THREE.CylinderGeometry(0.5,0.45,0.3,16);
+    const valve = new THREE.Mesh(valveGeo,bodyMat.clone());
+    valve.rotation.z = Math.PI/2;
+    valve.position.set(1.05,0,0);
+    group.add(valve);
+
+    // Flanges
+    for(let f=-1;f<=1;f+=2){
+      const flangeGeo = new THREE.CylinderGeometry(0.55,0.55,0.08,16);
+      const flange = new THREE.Mesh(flangeGeo,crankMat.clone());
+      flange.rotation.z = Math.PI/2;
+      flange.position.set(f*0.6,0,0);
+      group.add(flange);
+    }
+
+    // Inlet/outlet ports
+    const portGeo = new THREE.CylinderGeometry(0.15,0.15,0.5,8);
+    const port1 = new THREE.Mesh(portGeo,rodMat.clone());
+    port1.position.set(0.5,0.5,0);
+    group.add(port1);
+    const port2 = new THREE.Mesh(portGeo.clone(),rodMat.clone());
+    port2.position.set(0.5,-0.5,0);
+    group.add(port2);
+
+    // Motor/drive
+    const motorGeo = new THREE.CylinderGeometry(0.35,0.35,0.6,12);
+    const motor = new THREE.Mesh(motorGeo,new THREE.MeshStandardMaterial({color:0x333340,metalness:0.6,roughness:0.4}));
+    motor.rotation.z = Math.PI/2;
+    motor.position.set(-1.7,0,0);
+    group.add(motor);
+
+    // Vacuum jacket (wireframe)
+    const jacketGeo = new THREE.CylinderGeometry(0.52,0.52,1.6,16,1,true);
+    const jacketMat = new THREE.MeshBasicMaterial({color:mainColor,wireframe:true,opacity:0.15,transparent:true});
+    const jacket = new THREE.Mesh(jacketGeo,jacketMat);
+    jacket.rotation.z = Math.PI/2;
+    group.add(jacket);
+
+  } else if(type==='sub'){
+    // Submerged pump - vertical design
+    // Main column
+    const colGeo = new THREE.CylinderGeometry(0.25,0.25,2.5,12);
+    const colMat = new THREE.MeshStandardMaterial({color:mainColor,metalness:0.7,roughness:0.3});
+    const col = new THREE.Mesh(colGeo,colMat);
+    group.add(col);
+
+    // Motor housing (bottom)
+    const motGeo = new THREE.CylinderGeometry(0.4,0.4,0.8,16);
+    const mot = new THREE.Mesh(motGeo,new THREE.MeshStandardMaterial({color:darkColor,metalness:0.8,roughness:0.2}));
+    mot.position.y = -1.2;
+    group.add(mot);
+
+    // Impeller section
+    const impGeo = new THREE.CylinderGeometry(0.35,0.3,0.4,16);
+    const imp = new THREE.Mesh(impGeo,colMat.clone());
+    imp.position.y = -0.4;
+    group.add(imp);
+
+    // Top flange
+    const topGeo = new THREE.CylinderGeometry(0.5,0.5,0.1,16);
+    const top = new THREE.Mesh(topGeo,new THREE.MeshStandardMaterial({color:0x444450,metalness:0.9,roughness:0.1}));
+    top.position.y = 1.3;
+    group.add(top);
+
+    // Discharge pipe
+    const pipeGeo = new THREE.CylinderGeometry(0.12,0.12,0.8,8);
+    const pipe = new THREE.Mesh(pipeGeo,new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:0.8,roughness:0.2}));
+    pipe.rotation.z = Math.PI/2;
+    pipe.position.set(0.5,0.8,0);
+    group.add(pipe);
+
+    // Suction strainer (bottom)
+    const strGeo = new THREE.CylinderGeometry(0.42,0.35,0.3,16,1,true);
+    const str = new THREE.Mesh(strGeo,new THREE.MeshBasicMaterial({color:mainColor,wireframe:true,opacity:0.3,transparent:true}));
+    str.position.y = -1.7;
+    group.add(str);
+
+    // Cable
+    const cableGeo = new THREE.CylinderGeometry(0.03,0.03,2.5,4);
+    const cable = new THREE.Mesh(cableGeo,new THREE.MeshStandardMaterial({color:0x222222}));
+    cable.position.set(0.3,0,0);
+    group.add(cable);
+
+  } else {
+    // Centrifugal pump
+    // Volute casing (spiral-like)
+    const voluteGeo = new THREE.TorusGeometry(0.6,0.3,12,24);
+    const voluteMat = new THREE.MeshStandardMaterial({color:mainColor,metalness:0.7,roughness:0.3});
+    const volute = new THREE.Mesh(voluteGeo,voluteMat);
+    volute.rotation.x = Math.PI/2;
+    group.add(volute);
+
+    // Center hub
+    const hubGeo = new THREE.CylinderGeometry(0.3,0.3,0.5,16);
+    const hub = new THREE.Mesh(hubGeo,new THREE.MeshStandardMaterial({color:darkColor,metalness:0.8,roughness:0.2}));
+    hub.rotation.x = Math.PI/2;
+    group.add(hub);
+
+    // Inlet
+    const inGeo = new THREE.CylinderGeometry(0.2,0.2,0.8,8);
+    const inp = new THREE.Mesh(inGeo,new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:0.8,roughness:0.2}));
+    inp.position.set(0,0,0.6);
+    group.add(inp);
+
+    // Outlet
+    const outGeo = new THREE.CylinderGeometry(0.15,0.15,0.7,8);
+    const outp = new THREE.Mesh(outGeo,new THREE.MeshStandardMaterial({color:0xaaaaaa,metalness:0.8,roughness:0.2}));
+    outp.rotation.z = Math.PI/2;
+    outp.position.set(0.8,0.3,0);
+    group.add(outp);
+
+    // Base plate
+    const baseGeo = new THREE.BoxGeometry(2,0.08,1.2);
+    const base = new THREE.Mesh(baseGeo,new THREE.MeshStandardMaterial({color:0x333340,metalness:0.5,roughness:0.5}));
+    base.position.y = -0.7;
+    group.add(base);
+
+    // Motor
+    const mGeo = new THREE.CylinderGeometry(0.3,0.3,0.8,12);
+    const m = new THREE.Mesh(mGeo,new THREE.MeshStandardMaterial({color:0x333340,metalness:0.6,roughness:0.4}));
+    m.rotation.x = Math.PI/2;
+    m.position.set(-0.7,0,0);
+    group.add(m);
+  }
+
+  // Slight variation per pump
+  group.rotation.y = variation * 0.3;
+  scene.add(group);
+
+  // Lighting
+  const amb = new THREE.AmbientLight(0xffffff,0.4);
+  scene.add(amb);
+  const dir = new THREE.DirectionalLight(0xffffff,0.8);
+  dir.position.set(3,3,3);
+  scene.add(dir);
+  const rim = new THREE.DirectionalLight(new THREE.Color(color),0.3);
+  rim.position.set(-3,-1,2);
+  scene.add(rim);
+
+  // Mouse drag rotation
+  let isDragging = false, prevX = 0, prevY = 0;
+  let rotVelX = 0, rotVelY = 0.003;
+
+  container.addEventListener('mousedown',e=>{isDragging=true;prevX=e.clientX;prevY=e.clientY;rotVelY=0;rotVelX=0;});
+  container.addEventListener('touchstart',e=>{isDragging=true;prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;rotVelY=0;rotVelX=0;},{passive:true});
+  
+  window.addEventListener('mouseup',()=>{isDragging=false});
+  window.addEventListener('touchend',()=>{isDragging=false});
+  
+  container.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    const dx = e.clientX-prevX, dy = e.clientY-prevY;
+    rotVelY = dx*0.008; rotVelX = dy*0.008;
+    prevX=e.clientX; prevY=e.clientY;
+  });
+  container.addEventListener('touchmove',e=>{
+    if(!isDragging)return;
+    const dx = e.touches[0].clientX-prevX, dy = e.touches[0].clientY-prevY;
+    rotVelY = dx*0.008; rotVelX = dy*0.008;
+    prevX=e.touches[0].clientX; prevY=e.touches[0].clientY;
+  },{passive:true});
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(!isDragging){
+      rotVelY *= 0.97;
+      rotVelX *= 0.95;
+      if(Math.abs(rotVelY)<0.001) rotVelY = 0.003;
+    }
+    group.rotation.y += rotVelY;
+    group.rotation.x += rotVelX;
+    renderer.render(scene,camera);
+  }
+  animate();
+}
+
+// Init first pump tab
+selectPumpTab(0);
+
+// ==================== COMPARISON TABLE ====================
+const tableBody = document.getElementById('compTableBody');
+companies.forEach(c=>{
+  const row = document.createElement('tr');
+  const dims = ['pressure','base','h2','fgss','service','innovation'];
+  row.innerHTML = `<td><strong style="color:${c.color}">${c.name}</strong></td>` +
+    dims.map(d=>`<td><div class="bar-cell"><div class="bar-fill" style="width:${c.scores[d]}%;background:linear-gradient(90deg,${c.color},${c.color}88)"></div><span class="bar-val">${c.scores[d]}</span></div></td>`).join('');
+  tableBody.appendChild(row);
+});
+
+// ==================== PREDICTIONS ====================
+const predGrid = document.getElementById('predGrid');
+predictions.forEach(p=>{
+  const card = document.createElement('div');
+  card.className = `pred-card ${p.type}`;
+  card.innerHTML = `<div class="pred-icon">${p.icon}</div><h4>${p.title}</h4><p>${p.desc}</p><div class="pred-year">${p.year}</div>`;
+  predGrid.appendChild(card);
+});
+
+// ==================== ROADMAP ====================
+const roadmapEl = document.getElementById('roadmap');
+roadmap.forEach(r=>{
+  const item = document.createElement('div');
+  item.className = 'roadmap-item';
+  item.innerHTML = `<div class="roadmap-year">${r.year}</div><div class="roadmap-title">${r.title}</div><div class="roadmap-desc">${r.desc}</div>`;
+  roadmapEl.appendChild(item);
+});
+
+// ==================== GAPS ====================
+const gapGrid = document.getElementById('gapGrid');
+gaps.forEach(g=>{
+  const card = document.createElement('div');
+  card.className = 'gap-card';
+  card.innerHTML = `<h4>${g.title}</h4><p>${g.desc}</p><div class="gap-opp">⟡ ${g.opp}</div>`;
+  gapGrid.appendChild(card);
+});
+
+// ==================== CHARTS ====================
+const chartDefaults = {
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#8892a4',font:{family:'DM Sans',size:11}}}},
+  scales:{x:{ticks:{color:'#5a6478',font:{family:'Space Mono',size:10}},grid:{color:'#252a3622'}},
+          y:{ticks:{color:'#5a6478',font:{family:'Space Mono',size:10}},grid:{color:'#252a3644'}}}
+};
+
+// Market Size
+new Chart(document.getElementById('marketSizeChart'),{
+  type:'bar',
+  data:{
+    labels:['2020','2021','2022','2023','2024','2025','2026','2027','2028','2029','2030'],
+    datasets:[{label:'Market Size (USD B)',data:[1.6,1.75,1.9,2.1,2.63,2.88,3.1,3.35,3.6,3.9,4.23],
+      backgroundColor:ctx=>{
+        const g=ctx.chart.ctx.createLinearGradient(0,0,0,300);
+        g.addColorStop(0,'#00e5a0');g.addColorStop(1,'#00e5a033');return g;
+      },borderColor:'#00e5a0',borderWidth:1,borderRadius:4}]
+  },options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:false}}}
+});
+
+// Segment
+new Chart(document.getElementById('segmentChart'),{
+  type:'doughnut',
+  data:{
+    labels:['LNG Carrier Cargo','FGSS High-Pressure','Bunkering','FSRU/FLNG','Retrofit/Conversion'],
+    datasets:[{data:[32,28,15,14,11],
+      backgroundColor:['#00e5a0','#00b8d4','#6c63ff','#f0c040','#ff6b6b'],borderWidth:0}]
+  },options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'right',labels:{color:'#8892a4',font:{family:'DM Sans',size:11},padding:12}}}}
+});
+
+// Market Share
+new Chart(document.getElementById('shareChart'),{
+  type:'polarArea',
+  data:{
+    labels:['Nikkiso','Vanzetti','Ebara/Cryodynamics','Cryostar/Fives','Alfa Laval/Cryomec'],
+    datasets:[{data:[35,18,22,15,10],
+      backgroundColor:['#00e5a066','#00b8d466','#6c63ff66','#f0c04066','#ff6b6b66'],
+      borderColor:['#00e5a0','#00b8d4','#6c63ff','#f0c040','#ff6b6b'],borderWidth:2}]
+  },options:{responsive:true,maintainAspectRatio:false,
+    scales:{r:{ticks:{display:false},grid:{color:'#252a3644'}}},
+    plugins:{legend:{position:'right',labels:{color:'#8892a4',font:{family:'DM Sans',size:11},padding:12}}}}
+});
+
+// Vessel Orders
+new Chart(document.getElementById('vesselChart'),{
+  type:'line',
+  data:{
+    labels:['2018','2019','2020','2021','2022','2023','2024','2025','2026*','2027*','2028*'],
+    datasets:[
+      {label:'LNG Newbuilds',data:[45,65,55,120,180,260,310,350,400,460,520],
+        borderColor:'#00e5a0',backgroundColor:'#00e5a015',fill:true,tension:0.4,pointRadius:3},
+      {label:'Retrofits',data:[5,8,10,15,25,40,65,95,140,200,280],
+        borderColor:'#ff6b6b',backgroundColor:'#ff6b6b15',fill:true,tension:0.4,pointRadius:3}
+    ]
+  },options:chartDefaults
+});
+
+// Regional
+new Chart(document.getElementById('regionChart'),{
+  type:'bar',
+  data:{
+    labels:['Asia-Pacific','Europe','North America','Middle East','Rest of World'],
+    datasets:[{label:'Revenue Share %',data:[42,25,18,10,5],
+      backgroundColor:['#00e5a0','#00b8d4','#6c63ff','#f0c040','#ff6b6b'],borderRadius:4,borderWidth:0}]
+  },options:{...chartDefaults,indexAxis:'y',plugins:{...chartDefaults.plugins,legend:{display:false}}}
+});
+
+// Tech Mix
+new Chart(document.getElementById('techMixChart'),{
+  type:'bar',
+  data:{
+    labels:['2020','2021','2022','2023','2024','2025','2026*','2028*','2030*'],
+    datasets:[
+      {label:'High Pressure (≥300 bar)',data:[25,30,38,42,50,55,60,65,70],backgroundColor:'#00e5a0cc',borderRadius:4},
+      {label:'Low Pressure (<20 bar)',data:[75,70,62,58,50,45,40,35,30],backgroundColor:'#6c63ff66',borderRadius:4}
+    ]
+  },options:{...chartDefaults,scales:{...chartDefaults.scales,x:{...chartDefaults.scales.x,stacked:true},y:{...chartDefaults.scales.y,stacked:true,max:100}}}
+});
+
+// R&D Focus
+new Chart(document.getElementById('rdChart'),{
+  type:'radar',
+  data:{
+    labels:['HP Efficiency','H₂ Compatibility','Digital/IoT','Multi-Fuel Flex','Seal Technology','Modular Design'],
+    datasets:[
+      {label:'Nikkiso',data:[85,65,80,60,75,90],borderColor:'#00e5a0',backgroundColor:'#00e5a015',pointRadius:3},
+      {label:'Vanzetti',data:[80,45,55,50,70,75],borderColor:'#00b8d4',backgroundColor:'#00b8d415',pointRadius:3},
+      {label:'Cryostar',data:[75,78,60,70,65,65],borderColor:'#f0c040',backgroundColor:'#f0c04015',pointRadius:3}
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,
+    scales:{r:{ticks:{color:'#5a6478',backdropColor:'transparent',font:{size:9}},
+      grid:{color:'#252a3666'},angleLines:{color:'#252a3644'},pointLabels:{color:'#8892a4',font:{size:10}}}},
+    plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},padding:15}}}}
+});
+
+// Fuel Molecule Timeline
+new Chart(document.getElementById('fuelChart'),{
+  type:'line',
+  data:{
+    labels:['2024','2025','2026','2027','2028','2029','2030','2031'],
+    datasets:[
+      {label:'LNG',data:[92,88,84,78,72,66,60,55],borderColor:'#00e5a0',tension:0.4,fill:false,pointRadius:3},
+      {label:'LH₂',data:[1,2,3,5,8,12,18,22],borderColor:'#00b8d4',tension:0.4,fill:false,pointRadius:3},
+      {label:'NH₃',data:[2,3,4,6,10,12,14,15],borderColor:'#f0c040',tension:0.4,fill:false,pointRadius:3},
+      {label:'Bio-LNG/e-Methane',data:[5,7,9,11,10,10,8,8],borderColor:'#6c63ff',tension:0.4,fill:false,borderDash:[5,5],pointRadius:3}
+    ]
+  },options:{...chartDefaults,scales:{...chartDefaults.scales,y:{...chartDefaults.scales.y,title:{display:true,text:'% of New Installations',color:'#5a6478'}}}}
+});
+
+// ==================== NAV SCROLL SPY ====================
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if(link)link.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+sections.forEach(s=>observer.observe(s));
+
+// Auto-select first company
+selectCompany(0);
+</script>
+</body>
+</html>
